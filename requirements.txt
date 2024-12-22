@@ -1,0 +1,5 @@
+opencv-python==4.7.0.72
+numpy==1.23.5
+fer==22.3.0
+pyttsx3==2.90
+Pillow==9.5.0
