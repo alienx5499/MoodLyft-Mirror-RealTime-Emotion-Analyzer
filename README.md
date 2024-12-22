@@ -118,6 +118,7 @@ Stay tuned for future releases!
    ```bash
    git clone https://github.com/your-repo/MoodLyft-Mirror.git
    cd MoodLyft-Mirror
+   cd MoodLyft-Mirror
    ```
 
 2. **Set Up a Virtual Environment**
