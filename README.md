@@ -1,4 +1,3 @@
-
 <div align="center">
 
 # 🌟 **MoodLyft Mirror** 🌟  
@@ -124,30 +123,26 @@ Stay tuned for future releases!
 2. **Set Up a Virtual Environment**
     Setting up a virtual environment ensures that your project's dependencies are isolated from your global Python installation, preventing version conflicts and promoting a clean development environment.
 
-<!-- #### **For macOS/Linux**
-
-1. **Create a virtual environment:**
-    ```bash
+   #### **For macOS/Linux**
+   1. **Create a virtual environment:**
+     ```bash
     python3 -m venv moodlyft_env
     ```
 
-2. **Activate the virtual environment:**
-    ```bash
+   2. **Activate the virtual environment:**
+     ```bash
     source moodlyft_env/bin/activate
     ```
-
-#### **For Windows**
-
-1. **Create a virtual environment:**
-    ```bash
-    python -m venv moodlyft_env
+   #### **For Windows**
+   1. **Create a virtual environment:**
+     ```bash
+    python3 -m venv moodlyft_env
     ```
 
-2. **Activate the virtual environment:**
-    ```bash
-    moodlyft_env\Scripts\activate -->
+   2. **Activate the virtual environment:**
+     ```bash
+    moodlyft_env\Scripts\activate 
     ```
-
 3. **Install Dependencies**
    ```bash
    pip install -r requirements.txt
