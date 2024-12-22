@@ -35,11 +35,10 @@ The **MoodLyft Mirror** is an advanced emotion detection project that leverages 
 1. [✨ Features](#-features)
 2. [🦾 Tech Stack](#-tech-stack)
 3. [📸 Screenshots](#-screenshots)
-4. [🧩 Try the App](#-try-the-app)
-5. [👨‍🔧 Setup Instructions](#-setup-instructions)
-6. [🎯 Target Audience](#-target-audience)
-7. [🤝 Contributing](#-contributing)
-8. [📜 License](#-license)
+4. [👨‍🔧 Setup Instructions](#-setup-instructions)
+5. [🎯 Target Audience](#-target-audience)
+6. [🤝 Contributing](#-contributing)
+7. [📜 License](#-license)
 
 ---
 
@@ -93,19 +92,6 @@ The **MoodLyft Mirror** is an advanced emotion detection project that leverages 
 
 ---
 
-## **🧩 Try the App**
-
-<div align="center">
-
-### **Want to Experience MoodLyft Mirror?**
-
-Clone the repository and follow the setup instructions to run the project locally.  
-Stay tuned for future releases!
-
-</div>
-
----
-
 ## **👨‍🔧 Setup Instructions**
 
 ### **Prerequisites**
@@ -118,7 +104,7 @@ Stay tuned for future releases!
    ```bash
    git clone https://github.com/your-repo/MoodLyft-Mirror.git
    cd MoodLyft-Mirror
-   cd MoodLyft-Mirror
+   cd MoodLyft-Mirror-Real-Time
    ```
 
 2. **Set Up a Virtual Environment**
