@@ -5,16 +5,16 @@
 
 ![Build Passing](https://img.shields.io/badge/build-passing-success?style=flat-square)
 ![Python](https://img.shields.io/badge/python-v3.11-blue?style=flat-square)
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/your-repo/MoodLyft-Mirror/blob/main/CONTRIBUTING.md)
-[![License: MIT](https://custom-icon-badges.herokuapp.com/github/license/your-repo/MoodLyft-Mirror?logo=law&logoColor=white)](https://github.com/your-repo/MoodLyft-Mirror/blob/main/LICENSE)
-![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-brightgreen?style=flat-square)
-![Views](https://hits.dwyl.com/your-repo/MoodLyft-Mirror.svg)
-![⭐ GitHub stars](https://img.shields.io/github/stars/your-repo/MoodLyft-Mirror?style=social)
-![🍴 GitHub forks](https://img.shields.io/github/forks/your-repo/MoodLyft-Mirror?style=social)
-![Commits](https://badgen.net/github/commits/your-repo/MoodLyft-Mirror)
-![🐛 GitHub issues](https://img.shields.io/github/issues/your-repo/MoodLyft-Mirror)
-![📂 GitHub pull requests](https://img.shields.io/github/issues-pr/your-repo/MoodLyft-Mirror)
-![💾 GitHub code size](https://img.shields.io/github/languages/code-size/your-repo/MoodLyft-Mirror)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer/blob/main/CONTRIBUTING.md)
+[![License: MIT](https://custom-icon-badges.herokuapp.com/github/license/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer?logo=law&logoColor=white)](https://github.com/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer/blob/main/LICENSE)
+![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-brightgreen?style=flat-square)
+![Views](https://hits.dwyl.com/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer.svg)
+![⭐ GitHub stars](https://img.shields.io/github/stars/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer?style=social)
+![🍴 GitHub forks](https://img.shields.io/github/forks/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer?style=social)
+![Commits](https://badgen.net/github/commits/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer)
+![🐛 GitHub issues](https://img.shields.io/github/issues/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer)
+![📂 GitHub pull requests](https://img.shields.io/github/issues-pr/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer)
+![💾 GitHub code size](https://img.shields.io/github/languages/code-size/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer)
 
 </div>
 
@@ -102,15 +102,14 @@ The **MoodLyft Mirror** is an advanced emotion detection project that leverages 
 ### **Steps to Run the Project**
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/your-repo/MoodLyft-Mirror.git
-   cd MoodLyft-Mirror
-   cd MoodLyft-Mirror-Real-Time
+   git clone https://github.com/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer.git
+   cd MoodLyft-Mirror-RealTime-Emotion-Analyzer
    ```
 
 2. **Set Up a Virtual Environment**
     Setting up a virtual environment ensures that your project's dependencies are isolated from your global Python installation, preventing version conflicts and promoting a clean development environment.
 
-   #### **For macOS/Linux**
+   *For macOS/Linux*
    1. **Create a virtual environment:**
      ```bash
     python3 -m venv moodlyft_env
@@ -120,7 +119,7 @@ The **MoodLyft Mirror** is an advanced emotion detection project that leverages 
      ```bash
     source moodlyft_env/bin/activate
     ```
-   #### **For Windows**
+   *For Windows*
    1. **Create a virtual environment:**
      ```bash
     python3 -m venv moodlyft_env
@@ -131,9 +130,15 @@ The **MoodLyft Mirror** is an advanced emotion detection project that leverages 
     moodlyft_env\Scripts\activate 
     ```
 3. **Install Dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+   *For macOS/Linux*
+     ```bash
+    pip install -r requirements-macos.txt
+    ```
+
+   *For Windows*
+     ```bash
+    pip install -r requirements-windows.txt
+    ```
 
 4. **Run the Application**
    ```bash
@@ -180,7 +185,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 <div align="center">
 
 ### 📬 **Feedback & Suggestions**
-*We value your input! Share your thoughts through [GitHub Issues](https://github.com/your-repo/MoodLyft-Mirror/issues).*
+*We value your input! Share your thoughts through [GitHub Issues](https://github.com/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer/issues).*
 
 💡 *Let's work together to uplift emotions and create positivity!*
 

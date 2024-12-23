@@ -1,0 +1,7 @@
+opencv-python
+numpy
+fer
+pyttsx3
+Pillow
+moviepy==1.0.3
+tensorflow

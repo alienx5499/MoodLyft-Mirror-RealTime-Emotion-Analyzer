@@ -23,6 +23,15 @@ logging.basicConfig(
 )
 
 ########################################
+# DIRECTORIES FOR OUTPUT
+########################################
+VIDEOS_DIR = "Output/Videos"
+SCREENSHOTS_DIR = "Output/Screenshots"
+
+os.makedirs(VIDEOS_DIR, exist_ok=True)
+os.makedirs(SCREENSHOTS_DIR, exist_ok=True)
+
+########################################
 # ENHANCED EMOTION DATA
 ########################################
 COMPLIMENTS = {
@@ -381,7 +390,7 @@ class EmotionDetector:
 #                 MAIN APP
 ##############################################
 def main():
-    logging.info("Starting 'EmotionLift - Enhanced Edition' with modern UI & logging.")
+    logging.info("Starting 'MoodLyft-Mirror'.")
     logging.info("Press 'q' to quit, 's' to save a screenshot.")
 
     detector = EmotionDetector()
@@ -394,8 +403,9 @@ def main():
     # Setup video writer (no audio)
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    out = cv2.VideoWriter(f"emotion_capture_{timestamp}.mp4", fourcc, 20.0, (1280, 720))
-    logging.info(f"Video output file: emotion_capture_{timestamp}.mp4")
+    video_path = os.path.join(VIDEOS_DIR, f"emotion_capture_{timestamp}.mp4")
+    out = cv2.VideoWriter(video_path, fourcc, 20.0, (1280, 720))
+    logging.info(f"Video will be saved at: {video_path}")
 
     while True:
         ret, frame = cap.read()
@@ -411,7 +421,7 @@ def main():
         out.write(processed_frame)
 
         # Display
-        cv2.imshow("EmotionLift - Enhanced Edition", processed_frame)
+        cv2.imshow("MoodLyft-Mirror", processed_frame)
 
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
@@ -419,8 +429,9 @@ def main():
             break
         elif key == ord('s'):
             screenshot_name = f"emotion_screenshot_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
-            cv2.imwrite(screenshot_name, processed_frame)
-            logging.info(f"Screenshot saved as {screenshot_name}")
+            screenshot_path = os.path.join(SCREENSHOTS_DIR, screenshot_name)
+            cv2.imwrite(screenshot_path, frame)
+            logging.info(f"Screenshot saved at: {screenshot_path}")
 
     # Cleanup
     cap.release()
