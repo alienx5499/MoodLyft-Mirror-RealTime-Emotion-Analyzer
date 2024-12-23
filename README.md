@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌟 **MoodLyft Mirror** 🌟  
+# 🌟 **MoodLyft Mirror RealTime Emotion Analyzer** 🌟  
 ### *Elevating your mood with intelligent emotion detection*
 
 ![Build Passing](https://img.shields.io/badge/build-passing-success?style=flat-square)
@@ -20,7 +20,7 @@
 
 ---
 
-## **📱 What is MoodLyft Mirror?**
+## **📱 What is MoodLyft Mirror RealTime Emotion Analyzer?**
 
 The **MoodLyft Mirror** is an advanced emotion detection project that leverages AI to:
 - Recognize emotions in real-time through facial analysis.
