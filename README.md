@@ -5,16 +5,16 @@
 
 ![Build Passing](https://img.shields.io/badge/build-passing-success?style=flat-square)
 ![Python](https://img.shields.io/badge/python-v3.11-blue?style=flat-square)
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer/blob/main/CONTRIBUTING.md)
-[![License: MIT](https://custom-icon-badges.herokuapp.com/github/license/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer?logo=law&logoColor=white)](https://github.com/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer/blob/main/LICENSE)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer/blob/main/CONTRIBUTING.md)
+[![License: MIT](https://custom-icon-badges.herokuapp.com/github/license/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer?logo=law&logoColor=white)](https://github.com/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer/blob/main/LICENSE)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-brightgreen?style=flat-square)
-![Views](https://hits.dwyl.com/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer.svg)
-![⭐ GitHub stars](https://img.shields.io/github/stars/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer?style=social)
-![🍴 GitHub forks](https://img.shields.io/github/forks/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer?style=social)
-![Commits](https://badgen.net/github/commits/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer)
-![🐛 GitHub issues](https://img.shields.io/github/issues/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer)
-![📂 GitHub pull requests](https://img.shields.io/github/issues-pr/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer)
-![💾 GitHub code size](https://img.shields.io/github/languages/code-size/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer)
+![Views](https://hits.dwyl.com/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer.svg)
+![⭐ GitHub stars](https://img.shields.io/github/stars/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer?style=social)
+![🍴 GitHub forks](https://img.shields.io/github/forks/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer?style=social)
+![Commits](https://badgen.net/github/commits/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer)
+![🐛 GitHub issues](https://img.shields.io/github/issues/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer)
+![📂 GitHub pull requests](https://img.shields.io/github/issues-pr/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer)
+![💾 GitHub code size](https://img.shields.io/github/languages/code-size/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer)
 
 </div>
 
@@ -102,7 +102,7 @@ The **MoodLyft Mirror** is an advanced emotion detection project that leverages 
 ### **Steps to Run the Project**
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer.git
+   git clone https://github.com/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer.git
    cd MoodLyft-Mirror-RealTime-Emotion-Analyzer
    ```
 
@@ -185,7 +185,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 <div align="center">
 
 ### 📬 **Feedback & Suggestions**
-*We value your input! Share your thoughts through [GitHub Issues](https://github.com/your-repo/MoodLyft-Mirror-RealTime-Emotion-Analyzer/issues).*
+*We value your input! Share your thoughts through [GitHub Issues](https://github.com/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer/issues).*
 
 💡 *Let's work together to uplift emotions and create positivity!*
 
