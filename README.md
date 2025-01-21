@@ -9,12 +9,12 @@
 [![License: MIT](https://custom-icon-badges.herokuapp.com/github/license/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer?logo=law&logoColor=white)](https://github.com/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer/blob/main/LICENSE)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-brightgreen?style=flat-square)
 ![Views](https://hits.dwyl.com/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer.svg)
-![⭐ GitHub stars](https://img.shields.io/github/stars/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer?style=social)
-![🍴 GitHub forks](https://img.shields.io/github/forks/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer?style=social)
-![Commits](https://badgen.net/github/commits/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer)
-![🐛 GitHub issues](https://img.shields.io/github/issues/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer)
-![📂 GitHub pull requests](https://img.shields.io/github/issues-pr/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer)
-![💾 GitHub code size](https://img.shields.io/github/languages/code-size/alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer-RealTime-Emotion-Analyzer)
+![⭐ GitHub stars](https://img.shields.io/github/stars/Alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer?style=social)
+![🍴 GitHub forks](https://img.shields.io/github/forks/Alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer?style=social)
+![Commits](https://badgen.net/github/commits/Alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer)
+![🐛 GitHub issues](https://img.shields.io/github/issues/Alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer)
+![📂 GitHub pull requests](https://img.shields.io/github/issues-pr/Alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer)
+![💾 GitHub code size](https://img.shields.io/github/languages/code-size/Alienx5499/MoodLyft-Mirror-RealTime-Emotion-Analyzer)
 
 </div>
 
