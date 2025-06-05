@@ -420,13 +420,20 @@ echo    Press 'q' to quit, 's' for screenshot, 'r' to reset history
 echo    Press Ctrl+C to force quit
 echo.
 
+REM Change to script directory to ensure correct paths
+cd /d "%~dp0"
+echo 📁 Working directory: %CD%
+
 REM Check if virtual environment exists
 if not exist "{venv_info['name']}" (
     echo ❌ Virtual environment not found!
+    echo    Expected location: %CD%\\{venv_info['name']}
     echo    Please run setup.py first
     pause
     exit /b 1
 )
+
+echo ✅ Virtual environment found: {venv_info['name']}
 
 REM Activate virtual environment and run
 call {venv_info['activate']}
@@ -439,23 +446,55 @@ pause
             print("✅ Created/updated run_moodlyft.bat")
             
         else:
-            # Unix shell script
+            # Unix shell script with smart path detection
             with open("run_moodlyft.sh", "w") as f:
                 f.write(f"""#!/bin/bash
+
 echo "🚀 Starting MoodLyft-Mirror..."
 echo "   Press 'q' to quit, 's' for screenshot, 'r' to reset history"
 echo "   Press Ctrl+C to force quit"
 echo
 
-# Check if virtual environment exists
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${{BASH_SOURCE[0]}}" )" &> /dev/null && pwd )"
+echo "📁 Script location: $SCRIPT_DIR"
+
+# Change to script directory to ensure correct paths
+cd "$SCRIPT_DIR"
+echo "📁 Working directory: $(pwd)"
+
+# Check if virtual environment exists in current directory
 if [ ! -d "{venv_info['name']}" ]; then
     echo "❌ Virtual environment not found!"
-    echo "   Please run: python3 setup.py"
+    echo "   Expected location: $(pwd)/{venv_info['name']}"
+    echo "   Current files:"
+    ls -la | head -10
+    echo "   ..."
+    echo
+    echo "💡 Troubleshooting:"
+    echo "   1. Make sure you're running this script from the correct directory"
+    echo "   2. Run: python3 setup.py (to create virtual environment)"
+    echo "   3. Check if {venv_info['name']} folder exists"
     exit 1
 fi
 
+echo "✅ Virtual environment found: {venv_info['name']}"
+
+# Check if main.py exists
+if [ ! -f "main.py" ]; then
+    echo "❌ main.py not found!"
+    echo "   Expected location: $(pwd)/main.py"
+    echo "   Make sure you're in the correct MoodLyft directory"
+    exit 1
+fi
+
+echo "✅ main.py found"
+
 # Activate virtual environment and run
+echo "🐍 Activating virtual environment..."
 source {venv_info['activate']}
+
+echo "🎬 Starting application..."
 {venv_info['python']} main.py
 
 echo ""
