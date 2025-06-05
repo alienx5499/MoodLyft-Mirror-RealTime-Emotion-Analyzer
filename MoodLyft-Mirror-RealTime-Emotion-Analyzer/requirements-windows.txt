@@ -1,7 +1,18 @@
-opencv-python
-numpy
-fer
-pyttsx3
-Pillow
-moviepy==1.0.3
-tensorflow
+# Core dependencies
+opencv-python>=4.8.0
+numpy>=1.24.0
+pyttsx3>=2.90
+Pillow>=10.0.0
+
+# Performance and visualization
+scipy>=1.10.0
+matplotlib>=3.7.0
+
+# Audio and multimedia
+moviepy>=1.0.3
+
+# System monitoring
+psutil>=5.9.0
+
+# Optional: FER for advanced emotion detection (may require additional setup)
+# fer>=22.5.1

@@ -1,35 +1,252 @@
-# System files
-.DS_Store
+# ===================================
+# MoodLyft-Mirror .gitignore
+# Real-Time Emotion Analyzer
+# ===================================
 
-# Virtual environment
-MoodLyft-Mirror-RealTime-Emotion-Analyzer/moodlyft_env/
-
-# Python cache files
-*.pyc
-*.pyo
+# ===== PYTHON =====
+# Byte-compiled / optimized / DLL files
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
 
-# Logs and runtime files
-*.log
-*.pid
-*.lock
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# IDE specific files
+# PyInstaller
+*.manifest
+*.spec
+
+# ===== VIRTUAL ENVIRONMENTS =====
+venv/
+env/
+ENV/
+.venv/
+.env/
+moodlyft_env/
+*/moodlyft_env/
+emotion_env/
+cv_env/
+
+# ===== MACHINE LEARNING & AI =====
+# Model files
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.hdf5
+*.pb
+*.pth
+*.pt
+*.onnx
+*.tflite
+*.caffemodel
+*.prototxt
+
+# Training data and datasets
+data/
+dataset/
+datasets/
+training_data/
+test_data/
+*.csv
+*.xlsx
+
+# ===== COMPUTER VISION & MEDIA =====
+# Output directories
+Output/
+Screenshots/
+Videos/
+Recordings/
+*/Output/
+*/Screenshots/
+*/Videos/
+
+# Image and video files
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.webp
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wmv
+*.flv
+*.webm
+*.m4v
+
+# Audio files
+*.wav
+*.mp3
+*.m4a
+*.aac
+*.flac
+*.ogg
+
+# ===== DEVELOPMENT & IDE =====
+# IDEs and editors
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
+.spyderproject
+.spyproject
+.ropeproject
+*.swp
+*.swo
+*~
 
-# OS generated files
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# ===== SYSTEM FILES =====
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
 *.stackdump
 
-# Environment files
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ===== CONFIGURATION & SECRETS =====
+# Environment variables
 .env
+.env.local
+.env.production
+.env.staging
 *.env
 
-# Output directories
-MoodLyft-Mirror-RealTime-Emotion-Analyzer/Output/
+# Configuration files with secrets
+config_local.py
+user_config.py
+secrets.py
+credentials.json
+*.key
+*.pem
+*.p12
+*.pfx
+
+# ===== LOGS & RUNTIME =====
+# Log files
+*.log
+logs/
+*.pid
+*.seed
+*.lock
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# ===== DOCUMENTATION =====
+# Documentation builds
+docs/_build/
+site/
+
+# ===== TEMPORARY & CACHE =====
+# Temporary files
+tmp/
+temp/
+.tmp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+
+# Cache directories
+.cache/
+.npm/
+.yarn/
+
+# ===== PROJECT SPECIFIC =====
+# Launcher scripts
+run_moodlyft.command
+run_moodlyft.bat
+run_moodlyft.sh
+start_moodlyft.*
+launch_*.*
+*.command
+
+# Emotion detection specific
+emotion_models/
+face_models/
+cascades/
+haarcascades/
+pretrained_models/
+
+# Performance and debugging
+*.prof
+memory_profiler_*.dat
+.profiling/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# ===== MISC =====
+# OS generated files
+.directory
+.fseventsd
+.DocumentRevisions-V100
+.TemporaryItems
+.apdisk
