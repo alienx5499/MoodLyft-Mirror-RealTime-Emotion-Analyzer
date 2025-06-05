@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """
 Setup script for MoodLyft-Mirror
-Automates installation and initial configuration
+Automates virtual environment creation and dependency installation
+Smart venv management - preserves existing working environments
 """
 
 import os
 import sys
 import subprocess
 import platform
-import json
+import shutil
 from pathlib import Path
 
 def print_banner():
@@ -23,6 +24,44 @@ def print_banner():
 """
     print(banner)
 
+def get_system_info():
+    """Analyze system and return comprehensive information"""
+    print("🖥️  Analyzing system capabilities...")
+    
+    system_info = {
+        "os": platform.system(),
+        "os_version": platform.release(),
+        "architecture": platform.architecture()[0],
+        "processor": platform.processor() or "Unknown",
+        "python_version": sys.version,
+        "python_executable": sys.executable,
+    }
+    
+    # Try to get additional system info
+    try:
+        import psutil
+        system_info.update({
+            "cpu_cores": psutil.cpu_count(),
+            "memory_gb": round(psutil.virtual_memory().total / (1024**3), 1),
+            "disk_free_gb": round(psutil.disk_usage('.').free / (1024**3), 1)
+        })
+    except ImportError:
+        # psutil not available, use basic detection
+        system_info.update({
+            "cpu_cores": os.cpu_count() or "Unknown",
+            "memory_gb": "Unknown",
+            "disk_free_gb": "Unknown"
+        })
+    
+    # Display system information
+    print(f"   🖥️  OS: {system_info['os']} {system_info['os_version']} ({system_info['architecture']})")
+    print(f"   🐍 Python: {system_info['python_version'].split()[0]}")
+    print(f"   🖥️  CPU: {system_info.get('cpu_cores', 'Unknown')} cores")
+    print(f"   💾 Memory: {system_info.get('memory_gb', 'Unknown')} GB")
+    print(f"   💽 Disk Space: {system_info.get('disk_free_gb', 'Unknown')} GB free")
+    
+    return system_info
+
 def check_python_version():
     """Check if Python version is compatible"""
     print("🐍 Checking Python version...")
@@ -30,389 +69,496 @@ def check_python_version():
     if sys.version_info < (3, 8):
         print("❌ Python 3.8 or higher is required!")
         print(f"   Current version: {sys.version}")
+        print("   Please install a newer Python version and try again.")
         return False
     
     print(f"✅ Python {sys.version.split()[0]} - Compatible!")
     return True
 
-def check_system_requirements():
-    """Check system requirements and recommend settings"""
-    print("🖥️  Analyzing system capabilities...")
-    
-    system_info = {
-        "os": platform.system(),
-        "architecture": platform.architecture()[0],
-        "processor": platform.processor() or "Unknown",
-    }
-    
-    try:
-        import psutil
-        system_info.update({
-            "cpu_cores": psutil.cpu_count(),
-            "memory_gb": round(psutil.virtual_memory().total / (1024**3), 1),
-            "cpu_percent": psutil.cpu_percent(interval=1)
-        })
-    except ImportError:
-        print("📦 Installing psutil for system analysis...")
-        try:
-            subprocess.run([sys.executable, "-m", "pip", "install", "psutil"], 
-                          check=True, capture_output=True)
-            import psutil
-            system_info.update({
-                "cpu_cores": psutil.cpu_count(),
-                "memory_gb": round(psutil.virtual_memory().total / (1024**3), 1),
-                "cpu_percent": psutil.cpu_percent(interval=1)
-            })
-        except (subprocess.CalledProcessError, ImportError):
-            print("   ⚠️  Could not install psutil, using basic detection")
-            system_info.update({
-                "cpu_cores": "Unknown",
-                "memory_gb": "Unknown",
-                "cpu_percent": "Unknown"
-            })
-    
-    print(f"   OS: {system_info['os']} ({system_info['architecture']})")
-    print(f"   CPU: {system_info.get('cpu_cores', 'Unknown')} cores")
-    print(f"   Memory: {system_info.get('memory_gb', 'Unknown')} GB")
-    
-    # Recommend performance preset
-    if isinstance(system_info.get('cpu_cores'), int) and isinstance(system_info.get('memory_gb'), (int, float)):
-        if system_info['cpu_cores'] >= 8 and system_info['memory_gb'] >= 16:
-            recommended_preset = "high_performance"
-            print("🚀 Recommended preset: High Performance")
-        elif system_info['cpu_cores'] >= 4 and system_info['memory_gb'] >= 8:
-            recommended_preset = "balanced"
-            print("⚖️  Recommended preset: Balanced")
-        else:
-            recommended_preset = "performance_mode"
-            print("🔋 Recommended preset: Performance Mode")
-    else:
-        recommended_preset = "balanced"
-        print("⚖️  Recommended preset: Balanced (default)")
-    
-    return system_info, recommended_preset
-
-def install_dependencies():
-    """Install required dependencies"""
-    print("📦 Installing dependencies...")
-    
-    # Determine which requirements file to use
+def get_venv_info():
+    """Get virtual environment paths and commands for current system"""
     system = platform.system().lower()
+    venv_name = "moodlyft_env"
     
-    if system == "darwin" and os.path.exists("requirements-macos.txt"):
-        requirements_file = "requirements-macos.txt"
-    elif system == "windows" and os.path.exists("requirements-windows.txt"):
-        requirements_file = "requirements-windows.txt"
+    if system == "windows":
+        venv_python = os.path.join(venv_name, "Scripts", "python.exe")
+        venv_pip = os.path.join(venv_name, "Scripts", "pip.exe")
+        activate_script = os.path.join(venv_name, "Scripts", "activate.bat")
     else:
-        # Create a basic requirements file
-        basic_requirements = [
-            "opencv-python>=4.8.0",
-            "numpy>=1.24.0",
-            "fer>=22.5.1",
-            "pyttsx3>=2.90",
-            "Pillow>=10.0.0",
-            "scipy>=1.10.0",
-            "matplotlib>=3.7.0",
-            "psutil>=5.9.0"
-        ]
-        
-        with open("requirements-basic.txt", "w") as f:
-            f.write("\n".join(basic_requirements))
-        
-        requirements_file = "requirements-basic.txt"
+        venv_python = os.path.join(venv_name, "bin", "python")
+        venv_pip = os.path.join(venv_name, "bin", "pip")
+        activate_script = os.path.join(venv_name, "bin", "activate")
     
-    print(f"   Using {requirements_file}")
+    return {
+        "name": venv_name,
+        "python": venv_python,
+        "pip": venv_pip,
+        "activate": activate_script,
+        "exists": os.path.exists(venv_name)
+    }
+
+def test_venv_health():
+    """Test if existing virtual environment is healthy and working"""
+    venv_info = get_venv_info()
+    
+    if not venv_info["exists"]:
+        return False, "Virtual environment doesn't exist"
+    
+    # Check if Python executable exists
+    if not os.path.exists(venv_info["python"]):
+        return False, "Python executable missing in venv"
+    
+    # Test if Python works in the venv
+    try:
+        result = subprocess.run([
+            venv_info["python"], "--version"
+        ], check=True, capture_output=True, text=True)
+        
+        python_version = result.stdout.strip()
+        print(f"   📍 Found existing venv with {python_version}")
+        
+    except subprocess.CalledProcessError:
+        return False, "Python executable in venv is corrupted"
+    
+    # Test basic imports
+    basic_modules = ["sys", "os", "subprocess"]
+    for module in basic_modules:
+        try:
+            subprocess.run([
+                venv_info["python"], "-c", f"import {module}"
+            ], check=True, capture_output=True)
+        except subprocess.CalledProcessError:
+            return False, f"Basic module {module} import failed"
+    
+    return True, "Virtual environment is healthy"
+
+def check_installed_packages():
+    """Check what packages are already installed in the venv"""
+    venv_info = get_venv_info()
+    
+    if not venv_info["exists"]:
+        return {}
     
     try:
-        # Try to upgrade pip first (optional, don't fail if this doesn't work)
+        result = subprocess.run([
+            venv_info["pip"], "list", "--format=json"
+        ], check=True, capture_output=True, text=True)
+        
+        import json
+        packages = json.loads(result.stdout)
+        return {pkg["name"].lower(): pkg["version"] for pkg in packages}
+        
+    except (subprocess.CalledProcessError, json.JSONDecodeError):
+        return {}
+
+def manage_virtual_environment():
+    """Smart virtual environment management"""
+    venv_info = get_venv_info()
+    
+    print("🔍 Checking virtual environment status...")
+    
+    if venv_info["exists"]:
+        print("✅ Virtual environment found!")
+        
+        # Test if it's healthy
+        is_healthy, health_message = test_venv_health()
+        print(f"   Status: {health_message}")
+        
+        if is_healthy:
+            print("🎯 Using existing virtual environment (no changes needed)")
+            
+            # Check if core packages are installed
+            installed_packages = check_installed_packages()
+            core_packages = ["opencv-python", "numpy", "pillow", "pyttsx3"]
+            missing_packages = []
+            
+            for pkg in core_packages:
+                if pkg.lower() not in installed_packages:
+                    missing_packages.append(pkg)
+            
+            if missing_packages:
+                print(f"   📦 Some packages missing: {', '.join(missing_packages)}")
+                print("   Will update dependencies...")
+                return True, "update"
+            else:
+                print("   📦 Core packages found")
+                
+                # Ask user if they want to update anyway
+                choice = input("\n❓ Virtual environment looks good. Update dependencies anyway? (y/N): ").strip().lower()
+                if choice in ['y', 'yes']:
+                    return True, "update"
+                else:
+                    print("✅ Skipping dependency installation")
+                    return True, "skip"
+        else:
+            print("⚠️  Virtual environment has issues - will recreate")
+            
+            # Ask for confirmation
+            choice = input("\n❓ Recreate virtual environment? (Y/n): ").strip().lower()
+            if choice in ['', 'y', 'yes']:
+                return False, "recreate"
+            else:
+                print("❌ Cannot proceed with corrupted virtual environment")
+                return False, "abort"
+    else:
+        print("📁 No virtual environment found - will create new one")
+        return False, "create"
+
+def remove_existing_venv():
+    """Remove existing virtual environment if needed"""
+    venv_info = get_venv_info()
+    
+    if venv_info["exists"]:
+        print(f"🗑️  Removing existing virtual environment: {venv_info['name']}")
         try:
-            subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "pip"], 
-                          check=True, capture_output=True)
-            print("   ✅ pip upgraded successfully")
-        except subprocess.CalledProcessError:
-            print("   ⚠️  pip upgrade skipped (not critical)")
+            # On Windows, sometimes files are locked, so try multiple approaches
+            if platform.system().lower() == "windows":
+                # Try to deactivate any active venv first
+                try:
+                    subprocess.run(["deactivate"], shell=True, capture_output=True)
+                except:
+                    pass
+            
+            shutil.rmtree(venv_info["name"])
+            print("✅ Existing virtual environment removed successfully!")
+            return True
+            
+        except PermissionError:
+            print(f"❌ Permission denied. Please manually delete the '{venv_info['name']}' folder")
+            print("   and run setup again.")
+            return False
+        except Exception as e:
+            print(f"❌ Error removing virtual environment: {e}")
+            print(f"   Please manually delete the '{venv_info['name']}' folder")
+            return False
+    
+    return True
+
+def create_virtual_environment():
+    """Create a new virtual environment"""
+    venv_info = get_venv_info()
+    
+    print(f"🏗️  Creating virtual environment: {venv_info['name']}")
+    
+    try:
+        # Create virtual environment
+        subprocess.run([
+            sys.executable, "-m", "venv", venv_info["name"]
+        ], check=True, capture_output=True)
         
-        # Install requirements
-        print("   📦 Installing packages...")
-        result = subprocess.run([sys.executable, "-m", "pip", "install", "-r", requirements_file], 
-                              check=True, capture_output=True, text=True)
+        print("✅ Virtual environment created successfully!")
         
-        print("✅ Dependencies installed successfully!")
+        # Verify creation
+        if not os.path.exists(venv_info["python"]):
+            print("❌ Virtual environment creation failed - Python executable not found")
+            return False
+            
+        return True
+        
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Error creating virtual environment: {e}")
+        print("   Make sure you have the 'venv' module available.")
+        print("   Try running: python -m venv --help")
+        return False
+    except Exception as e:
+        print(f"❌ Unexpected error creating virtual environment: {e}")
+        return False
+
+def upgrade_pip_in_venv():
+    """Upgrade pip in the virtual environment"""
+    venv_info = get_venv_info()
+    
+    print("📦 Upgrading pip in virtual environment...")
+    
+    try:
+        subprocess.run([
+            venv_info["python"], "-m", "pip", "install", "--upgrade", "pip"
+        ], check=True, capture_output=True)
+        
+        print("✅ pip upgraded successfully!")
+        return True
+        
+    except subprocess.CalledProcessError as e:
+        print(f"⚠️  pip upgrade failed: {e}")
+        print("   Continuing with existing pip version...")
+        return True  # Not critical, continue anyway
+
+def install_requirements_in_venv():
+    """Install requirements.txt in the virtual environment"""
+    venv_info = get_venv_info()
+    
+    # Find the appropriate requirements file
+    requirements_files = ["requirements.txt", "requirements-macos.txt", "requirements-windows.txt"]
+    requirements_file = None
+    
+    for req_file in requirements_files:
+        if os.path.exists(req_file):
+            requirements_file = req_file
+            break
+    
+    if not requirements_file:
+        print("❌ No requirements file found!")
+        print("   Looking for: requirements.txt, requirements-macos.txt, or requirements-windows.txt")
+        return False
+    
+    print(f"📦 Installing/updating dependencies from {requirements_file}...")
+    
+    try:
+        # Install requirements using virtual environment pip
+        result = subprocess.run([
+            venv_info["pip"], "install", "-r", requirements_file, "--upgrade"
+        ], check=True, capture_output=True, text=True)
+        
+        print("✅ Dependencies installed/updated successfully!")
         return True
         
     except subprocess.CalledProcessError as e:
         print(f"❌ Error installing dependencies: {e}")
         if hasattr(e, 'stderr') and e.stderr:
             print(f"   Error details: {e.stderr}")
-        elif hasattr(e, 'output') and e.output:
-            print(f"   Output: {e.output}")
         
         print("\n🔧 Troubleshooting suggestions:")
-        print("   1. Try running: pip install -r requirements-macos.txt")
-        print("   2. Check if you have write permissions")
-        print("   3. Try using a virtual environment:")
-        print("      python3 -m venv venv")
-        print("      source venv/bin/activate")
-        print("      pip install -r requirements-macos.txt")
+        print(f"   1. Try manually: {venv_info['python']} -m pip install -r {requirements_file}")
+        print("   2. Check if you have internet connectivity")
+        print("   3. Some packages might require system dependencies")
         
         return False
 
-def create_config_file(recommended_preset):
-    """Create a user configuration file"""
-    print("⚙️  Creating configuration file...")
+def test_installation():
+    """Test the installation by importing key modules"""
+    venv_info = get_venv_info()
     
-    config_content = f'''"""
-User configuration for MoodLyft-Mirror
-Generated by setup script
-"""
-
-from config import HardwarePresets, PerformanceConfig, VisualConfig, AudioConfig
-
-# Apply recommended preset based on your hardware
-HardwarePresets.{recommended_preset}()
-
-# Customize these settings as needed:
-
-# Performance (adjust based on your system)
-# PerformanceConfig.EMOTION_SKIP_FRAMES = 3
-# PerformanceConfig.CAMERA_WIDTH = 1280
-# PerformanceConfig.CAMERA_HEIGHT = 720
-
-# Visual effects (disable if experiencing performance issues)
-# VisualConfig.ENABLE_ANIMATIONS = True
-# VisualConfig.ENABLE_GLASSMORPHISM = True
-# VisualConfig.ENABLE_GLOW_EFFECTS = True
-
-# Audio settings
-# AudioConfig.TTS_RATE = 160
-# AudioConfig.COMPLIMENT_COOLDOWN = 8
-
-print(f"🎯 Applied {recommended_preset.replace('_', ' ').title()} preset")
-'''
+    print("🧪 Testing installation...")
     
-    try:
-        with open("user_config.py", "w") as f:
-            f.write(config_content)
-        print("✅ Configuration file created: user_config.py")
+    test_imports = [
+        ("cv2", "OpenCV"),
+        ("numpy", "NumPy"),
+        ("PIL", "Pillow"),
+        ("pyttsx3", "pyttsx3")
+    ]
+    
+    failed_imports = []
+    
+    for module, name in test_imports:
+        try:
+            result = subprocess.run([
+                venv_info["python"], "-c", f"import {module}; print('{name} OK')"
+            ], check=True, capture_output=True, text=True)
+            print(f"   ✅ {name}")
+        except subprocess.CalledProcessError:
+            print(f"   ❌ {name}")
+            failed_imports.append(name)
+    
+    if failed_imports:
+        print(f"\n⚠️  Some modules failed to import: {', '.join(failed_imports)}")
+        print("   The application might not work correctly.")
+        return False
+    else:
+        print("✅ All core modules imported successfully!")
         return True
-    except Exception as e:
-        print(f"⚠️  Could not create config file: {e}")
-        return False
 
-def test_camera():
-    """Test camera access"""
-    print("📷 Testing camera access...")
-    
-    try:
-        import cv2
-        cap = cv2.VideoCapture(0)
-        
-        if not cap.isOpened():
-            print("❌ Could not access camera (index 0)")
-            # Try other camera indices
-            for i in range(1, 4):
-                cap = cv2.VideoCapture(i)
-                if cap.isOpened():
-                    print(f"✅ Camera found at index {i}")
-                    cap.release()
-                    return True
-                cap.release()
-            
-            print("❌ No cameras found. Please ensure:")
-            print("   - Camera is connected and not in use by other apps")
-            print("   - Camera permissions are granted")
-            return False
-        else:
-            print("✅ Camera access successful!")
-            cap.release()
-            return True
-            
-    except ImportError:
-        print("⚠️  OpenCV not available for camera test")
-        return True  # Assume it will work
-    except Exception as e:
-        print(f"⚠️  Camera test error: {e}")
-        return True  # Don't fail setup for this
-
-def create_project_launcher():
-    """Create launcher script in project folder"""
-    print("🖥️  Creating project launcher...")
-    
+def create_activation_scripts():
+    """Create convenient activation scripts"""
+    venv_info = get_venv_info()
     system = platform.system().lower()
-    current_dir = os.getcwd()
+    
+    print("📝 Creating/updating activation scripts...")
     
     try:
         if system == "windows":
             # Windows batch file
-            shortcut_path = "run_moodlyft.bat"
-            
-            with open(shortcut_path, "w") as f:
+            with open("activate_env.bat", "w") as f:
                 f.write(f"""@echo off
-echo 🚀 Starting MoodLyft-Mirror...
-echo    Press Ctrl+C to quit
-cd /d "{current_dir}"
-python main.py
-pause
+echo 🐍 Activating MoodLyft virtual environment...
+call {venv_info['activate']}
+echo ✅ Virtual environment activated!
+echo    You can now run: python main.py
+cmd /k
 """)
-            print(f"✅ Launcher created: {shortcut_path}")
-            
-        elif system == "darwin":
-            # macOS command file
-            shortcut_path = "run_moodlyft.command"
-            
-            with open(shortcut_path, "w") as f:
-                f.write(f"""#!/bin/bash
-echo "🚀 Starting MoodLyft-Mirror..."
-echo "   Press 'q' to quit, 's' for screenshot, 'r' to reset history"
-cd "{current_dir}"
-
-# Activate virtual environment if it exists
-if [ -d "moodlyft_env" ]; then
-    source moodlyft_env/bin/activate
-fi
-
-python3 main.py
-
-# Keep terminal open briefly
-echo ""
-echo "✨ MoodLyft-Mirror closed. Press any key to exit..."
-read -n 1 -s
-""")
-            
-            os.chmod(shortcut_path, 0o755)
-            print(f"✅ Launcher created: {shortcut_path}")
+            print("✅ Created/updated activate_env.bat")
             
         else:
-            # Linux shell script
-            shortcut_path = "run_moodlyft.sh"
-            
-            with open(shortcut_path, "w") as f:
+            # Unix shell script
+            with open("activate_env.sh", "w") as f:
                 f.write(f"""#!/bin/bash
-echo "🚀 Starting MoodLyft-Mirror..."
-echo "   Press 'q' to quit, 's' for screenshot, 'r' to reset history"
-cd "{current_dir}"
-
-# Activate virtual environment if it exists
-if [ -d "moodlyft_env" ]; then
-    source moodlyft_env/bin/activate
-fi
-
-python3 main.py
-
-echo ""
-echo "✨ MoodLyft-Mirror closed. Press any key to exit..."
-read -n 1 -s
+echo "🐍 Activating MoodLyft virtual environment..."
+source {venv_info['activate']}
+echo "✅ Virtual environment activated!"
+echo "   You can now run: python main.py"
+bash
 """)
-            
-            os.chmod(shortcut_path, 0o755)
-            print(f"✅ Launcher created: {shortcut_path}")
-            
+            os.chmod("activate_env.sh", 0o755)
+            print("✅ Created/updated activate_env.sh")
+        
         return True
         
     except Exception as e:
-        print(f"⚠️  Could not create launcher: {e}")
+        print(f"⚠️  Could not create activation scripts: {e}")
         return False
 
-def run_demo():
-    """Ask user if they want to run a demo"""
-    print("\n🎉 Setup complete!")
-    print("\nWould you like to:")
-    print("1. 🚀 Run the application now")
-    print("2. 🎭 Try the interactive demo")
-    print("3. 📖 View the documentation")
-    print("4. 🚪 Exit setup")
+def create_run_script():
+    """Create a script to run the application with the virtual environment"""
+    venv_info = get_venv_info()
+    system = platform.system().lower()
     
-    choice = input("\nEnter your choice (1-4): ").strip()
+    print("🚀 Creating/updating run script...")
     
-    if choice == "1":
-        print("\n🚀 Starting MoodLyft-Mirror...")
-        print("   Press 'q' to quit, 's' for screenshot, 'r' to reset history")
-        try:
-            subprocess.run([sys.executable, "main.py"])
-        except KeyboardInterrupt:
-            print("\n👋 Application closed by user")
-        except Exception as e:
-            print(f"\n❌ Error running application: {e}")
-    
-    elif choice == "2":
-        print("\n🎭 Starting Interactive Demo...")
-        print("   Press SPACE for next demo, 'q' to quit")
-        try:
-            subprocess.run([sys.executable, "demo.py"])
-        except KeyboardInterrupt:
-            print("\n👋 Demo closed by user")
-        except Exception as e:
-            print(f"\n❌ Error running demo: {e}")
-    
-    elif choice == "3":
-        # Look for documentation files in current and parent directories
-        readme_files = [
-            "README.md",           # Current directory
-            "../README.md",        # Parent directory
-            "docs/README.md",      # Docs folder
-            "../docs/README.md"    # Parent docs folder
-        ]
+    try:
+        if system == "windows":
+            # Windows batch file
+            with open("run_moodlyft.bat", "w") as f:
+                f.write(f"""@echo off
+echo 🚀 Starting MoodLyft-Mirror...
+echo    Press 'q' to quit, 's' for screenshot, 'r' to reset history
+echo    Press Ctrl+C to force quit
+echo.
+
+REM Check if virtual environment exists
+if not exist "{venv_info['name']}" (
+    echo ❌ Virtual environment not found!
+    echo    Please run setup.py first
+    pause
+    exit /b 1
+)
+
+REM Activate virtual environment and run
+call {venv_info['activate']}
+{venv_info['python']} main.py
+
+echo.
+echo ✨ MoodLyft-Mirror closed. Press any key to exit...
+pause
+""")
+            print("✅ Created/updated run_moodlyft.bat")
+            
+        else:
+            # Unix shell script
+            with open("run_moodlyft.sh", "w") as f:
+                f.write(f"""#!/bin/bash
+echo "🚀 Starting MoodLyft-Mirror..."
+echo "   Press 'q' to quit, 's' for screenshot, 'r' to reset history"
+echo "   Press Ctrl+C to force quit"
+echo
+
+# Check if virtual environment exists
+if [ ! -d "{venv_info['name']}" ]; then
+    echo "❌ Virtual environment not found!"
+    echo "   Please run: python3 setup.py"
+    exit 1
+fi
+
+# Activate virtual environment and run
+source {venv_info['activate']}
+{venv_info['python']} main.py
+
+echo ""
+echo "✨ MoodLyft-Mirror closed. Press any key to exit..."
+read -n 1 -s
+""")
+            os.chmod("run_moodlyft.sh", 0o755)
+            print("✅ Created/updated run_moodlyft.sh")
         
-        found_readme = False
-        for readme in readme_files:
-            if os.path.exists(readme):
-                print(f"\n📖 Opening {readme}...")
-                try:
-                    if platform.system() == "Darwin":
-                        subprocess.run(["open", readme])
-                    elif platform.system() == "Windows":
-                        subprocess.run(["start", readme], shell=True)
-                    else:
-                        subprocess.run(["xdg-open", readme])
-                    found_readme = True
-                    break
-                except Exception as e:
-                    print(f"   Could not open {readme}: {e}")
-                    print(f"   Please manually open: {os.path.abspath(readme)}")
-                    found_readme = True
-                    break
+        return True
         
-        if not found_readme:
-            print("   📖 Available documentation:")
-            print("   - Check the project repository for README.md")
-            print("   - Look for setup instructions in the parent directory")
-            print("   - Visit the project homepage for online documentation")
+    except Exception as e:
+        print(f"⚠️  Could not create run script: {e}")
+        return False
+
+def display_usage_instructions():
+    """Display usage instructions"""
+    venv_info = get_venv_info()
+    system = platform.system().lower()
     
-    print("\n✨ Thank you for using MoodLyft-Mirror!")
+    print("\n" + "="*60)
+    print("🎉 Setup completed successfully!")
+    print("="*60)
+    
+    print("\n📖 How to use:")
+    
+    if system == "windows":
+        print("   Option 1 (Recommended): Double-click run_moodlyft.bat")
+        print("   Option 2: Manual activation:")
+        print("      1. Double-click activate_env.bat")
+        print("      2. Run: python main.py")
+    else:
+        print("   Option 1 (Recommended): ./run_moodlyft.sh")
+        print("   Option 2: Manual activation:")
+        print("      1. source activate_env.sh")
+        print("      2. python main.py")
+    
+    print("\n🎮 Controls:")
+    print("   • Press 'q' to quit")
+    print("   • Press 's' to take screenshot")
+    print("   • Press 'r' to reset emotion history")
+    
+    print(f"\n📁 Virtual environment: {venv_info['name']}/")
+    print(f"🐍 Python executable: {venv_info['python']}")
+    
+    print("\n💡 Tips:")
+    print("   • Run setup.py again anytime to update dependencies")
+    print("   • Ensure your camera is connected and not in use")
+    print("   • Good lighting improves emotion detection")
+    print("   • Position your face clearly in the camera view")
 
 def main():
     """Main setup function"""
     print_banner()
     
-    # Check requirements
+    # Step 1: Check Python version
     if not check_python_version():
-        return
+        return 1
     
-    # Analyze system
-    system_info, recommended_preset = check_system_requirements()
+    # Step 2: Analyze system
+    system_info = get_system_info()
     
-    # Install dependencies
-    if not install_dependencies():
-        print("❌ Setup failed during dependency installation")
-        return
+    # Step 3: Smart virtual environment management
+    venv_exists, action = manage_virtual_environment()
     
-    # Create config
-    create_config_file(recommended_preset)
+    if action == "abort":
+        print("❌ Setup aborted by user")
+        return 1
+    elif action == "skip":
+        print("⏭️  Skipping dependency installation")
+    else:
+        # Handle venv creation/recreation if needed
+        if not venv_exists:
+            if action == "recreate":
+                if not remove_existing_venv():
+                    return 1
+            
+            # Create new virtual environment
+            if not create_virtual_environment():
+                return 1
+        
+        # Step 4: Upgrade pip in virtual environment
+        upgrade_pip_in_venv()
+        
+        # Step 5: Install/update requirements in virtual environment
+        if action != "skip":
+            if not install_requirements_in_venv():
+                return 1
+        
+        # Step 6: Test installation
+        if not test_installation():
+            print("⚠️  Installation test failed, but continuing...")
     
-    # Test camera
-    test_camera()
+    # Step 7: Create/update convenience scripts (always do this)
+    create_activation_scripts()
+    create_run_script()
     
-    # Create launcher
-    create_project_launcher()
+    # Step 8: Display usage instructions
+    display_usage_instructions()
     
-    # Offer to run demo
-    run_demo()
+    return 0
 
 if __name__ == "__main__":
     try:
-        main()
+        exit_code = main()
+        sys.exit(exit_code)
     except KeyboardInterrupt:
         print("\n\n👋 Setup cancelled by user")
+        sys.exit(1)
     except Exception as e:
         print(f"\n❌ Setup error: {e}")
-        print("Please check the documentation or report this issue") 
+        print("Please check the error above and try again.")
+        sys.exit(1) 
