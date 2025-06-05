@@ -222,6 +222,8 @@ temp/
 run_moodlyft.command
 run_moodlyft.bat
 run_moodlyft.sh
+activate_env.bat
+activate_env.sh
 start_moodlyft.*
 launch_*.*
 *.command
