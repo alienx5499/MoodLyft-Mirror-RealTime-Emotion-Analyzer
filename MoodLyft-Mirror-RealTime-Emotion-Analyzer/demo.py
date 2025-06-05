@@ -10,13 +10,14 @@ import time
 import random
 import math
 from typing import Dict, List
-from main import OptimizedEmotionDetector, COLOR_MAP, EMOJIS
+from main import MoodLyftMirror
+from src.config import COLOR_MAP, EMOJIS
 
 class FeatureDemo:
     """Demonstrates specific features of the enhanced application"""
     
     def __init__(self):
-        self.detector = OptimizedEmotionDetector()
+        self.detector = MoodLyftMirror()
         self.demo_features = [
             ("🎨 Glassmorphism UI", self.demo_glassmorphism),
             ("✨ Smooth Animations", self.demo_animations),
@@ -41,7 +42,7 @@ class FeatureDemo:
         
         for i, panel in enumerate(panels):
             alpha = 0.3 + 0.2 * math.sin(time.time() + i)
-            self.detector.ui.draw_modern_rounded_rect(
+            self.detector.ui_elements.draw_modern_rounded_rect(
                 overlay, panel["x"], panel["y"], panel["w"], panel["h"], 20,
                 color=panel["color"], alpha=alpha
             )
@@ -63,7 +64,7 @@ class FeatureDemo:
         overlay = frame.copy()
         
         # Pulsing circle
-        pulse = self.detector.ui.animation_manager.create_pulse_animation()
+        pulse = self.detector.ui_elements.animation_manager.create_pulse_animation()
         radius = int(50 + 30 * pulse)
         color_intensity = int(255 * pulse)
         cv2.circle(overlay, (150, 150), radius, (color_intensity, 100, 255), -1)
@@ -72,7 +73,7 @@ class FeatureDemo:
         t = time.time()
         x = int(400 + 100 * math.sin(t))
         y = 100
-        self.detector.ui.draw_modern_rounded_rect(overlay, x, y, 80, 80, 15, (255, 255, 100))
+        self.detector.ui_elements.draw_modern_rounded_rect(overlay, x, y, 80, 80, 15, (255, 255, 100))
         
         # Color transition demo
         colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0)]
@@ -81,7 +82,7 @@ class FeatureDemo:
         next_index = (color_index + 1) % len(colors)
         local_progress = (color_progress * len(colors)) % 1
         
-        current_color = self.detector.ui.animation_manager.animate_color_transition(
+        current_color = self.detector.ui_elements.animation_manager.animate_color_transition(
             colors[color_index], colors[next_index], local_progress
         )
         
