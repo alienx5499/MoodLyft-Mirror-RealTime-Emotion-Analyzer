@@ -1,99 +1,82 @@
+#!/usr/bin/env python3
+"""
+TTS Manager Module
+Handles text-to-speech functionality with thread safety and error handling
+"""
+
 import time
+import logging
+import random
+import pyttsx3
 import threading
 import queue
-import random
-from typing import Dict, Optional, List
-import logging
-
-try:
-    import pyttsx3
-    TTS_AVAILABLE = True
-except ImportError:
-    TTS_AVAILABLE = False
-    print("⚠️ pyttsx3 not available. TTS features will be disabled.")
+from typing import Optional, List, Dict
 
 from .config import (
     COMPLIMENTS, TTS_RATE, TTS_VOLUME, TTS_PREFERRED_VOICES,
     COMPLIMENT_COOLDOWN, NO_FACE_COOLDOWN
 )
 
-
+########################################
+# TTS MANAGER
+########################################
 class TTSManager:
-    """Enhanced Text-to-Speech manager with threading and voice selection"""
+    """Thread-safe TTS manager with robust error handling"""
     
     def __init__(self):
         self.engine = None
         self.available = False
-        self.speech_queue = queue.Queue()
-        self.worker_thread = None
-        self.is_running = False
         self.current_voice = None
-        self.initialization_attempted = False
+        self.speech_queue = queue.Queue(maxsize=5)
+        self.worker_thread = None
+        self.is_running = True
         
-        if TTS_AVAILABLE:
-            self._initialize_engine()
-            if self.available:
-                self._start_worker()
+        logging.info("Initializing TTS engine...")
+        
+        if self._initialize_engine():
+            self._start_worker()
+            logging.info("✅ TTS engine initialized successfully")
+        else:
+            logging.warning("⚠️ TTS engine initialization failed - continuing without TTS")
     
     def _initialize_engine(self) -> bool:
-        """Initialize the TTS engine with error handling"""
-        if self.initialization_attempted:
-            return self.available
-            
-        self.initialization_attempted = True
+        """Initialize the TTS engine"""
         try:
-            logging.info("Initializing TTS engine...")
             self.engine = pyttsx3.init()
-            self._configure_engine()
-            self.available = True
-            logging.info("✅ TTS engine initialized successfully")
-            return True
+            if self.engine:
+                self._configure_engine()
+                self.available = True
+                return True
         except Exception as e:
-            logging.warning(f"⚠️ TTS engine initialization failed: {e}")
-            logging.info("🔇 TTS will be disabled, but application will continue normally")
-            self.available = False
-            self.engine = None
-            return False
+            logging.error(f"TTS initialization failed: {e}")
+        
+        self.available = False
+        return False
     
     def _configure_engine(self):
-        """Configure TTS engine settings"""
-        if not self.engine:
-            return
-        
+        """Configure TTS engine properties"""
         try:
-            # Set speech rate
             self.engine.setProperty('rate', TTS_RATE)
-            
-            # Set volume
             self.engine.setProperty('volume', TTS_VOLUME)
-            
-            # Try to set preferred voice
-            self._set_preferred_voice()
-            
             logging.info("TTS engine configured successfully")
             
+            # Set preferred voice
+            self._set_preferred_voice()
+            
         except Exception as e:
-            logging.warning(f"Failed to configure TTS engine: {e}")
-            # Don't disable TTS entirely for configuration errors
+            logging.warning(f"TTS configuration warning: {e}")
     
     def _set_preferred_voice(self):
-        """Set preferred voice based on configuration"""
-        if not self.engine:
-            return
-        
+        """Set preferred voice if available"""
         try:
             voices = self.engine.getProperty('voices')
             if not voices:
-                logging.warning("No TTS voices available")
                 return
             
             # Try to find preferred voice
             for voice in voices:
-                voice_id = voice.id.lower()
-                voice_name = voice.name.lower() if voice.name else ""
-                
-                for preferred in TTS_PREFERRED_VOICES:
-                    if preferred.lower() in voice_id or preferred.lower() in voice_name:
+                for preference in TTS_PREFERRED_VOICES:
+                    if preference.lower() in voice.name.lower():
                         self.engine.setProperty('voice', voice.id)
                         self.current_voice = voice.name
                         logging.info(f"Set TTS voice to: {voice.name}")
@@ -121,19 +104,60 @@ class TTSManager:
     def _speech_worker(self):
         """Worker thread for processing speech queue"""
         logging.info("TTS worker thread running")
+        
+        # On macOS, prioritize system 'say' command for reliability
+        import platform
+        use_system_say = platform.system() == "Darwin"
+        
+        # Create a new engine instance for this thread only if not using system say
+        thread_engine = None
+        if not use_system_say:
+            try:
+                import pyttsx3
+                thread_engine = pyttsx3.init()
+                if thread_engine:
+                    thread_engine.setProperty('rate', TTS_RATE)  # Use config value
+                    thread_engine.setProperty('volume', TTS_VOLUME)
+                    # Copy voice settings from main engine
+                    if self.engine:
+                        try:
+                            main_voice = self.engine.getProperty('voice')
+                            thread_engine.setProperty('voice', main_voice)
+                        except:
+                            pass
+            except Exception as e:
+                logging.warning(f"Could not create thread TTS engine: {e}")
+                thread_engine = None
+                use_system_say = True  # Fall back to system say
+        
         while self.is_running:
             try:
                 # Get speech request from queue with timeout
                 text = self.speech_queue.get(timeout=1.0)
                 
-                if text and self.available and self.engine:
+                if text and self.available:
                     try:
-                        logging.debug(f"TTS speaking: {text[:50]}...")
-                        self.engine.say(text)
-                        self.engine.runAndWait()
-                        logging.debug("TTS speech completed")
+                        logging.info(f"🔊 Speaking: {text}")
+                        if use_system_say:
+                            # Use macOS system say command (most reliable)
+                            import subprocess
+                            result = subprocess.run(
+                                ["say", "-r", str(TTS_RATE), text], 
+                                capture_output=True, 
+                                timeout=10
+                            )
+                            if result.returncode == 0:
+                                logging.info("✅ TTS speech completed successfully (system say)")
+                            else:
+                                logging.warning(f"System say failed: {result.stderr}")
+                        elif thread_engine:
+                            thread_engine.say(text)
+                            thread_engine.runAndWait()
+                            logging.info("✅ TTS speech completed successfully (pyttsx3)")
+                        else:
+                            logging.warning("⚠️ No TTS method available")
                     except Exception as speech_error:
-                        logging.error(f"TTS speech error: {speech_error}")
+                        logging.error(f"❌ TTS speech error: {speech_error}")
                         # Don't stop the worker, just skip this speech
                 
                 self.speech_queue.task_done()
@@ -142,16 +166,15 @@ class TTSManager:
                 continue
             except Exception as e:
                 logging.error(f"TTS worker error: {e}")
-                # Try to reinitialize engine on critical error
-                try:
-                    if not self._initialize_engine():
-                        logging.warning("TTS reinitialization failed, disabling TTS")
-                        self.available = False
-                        break
-                except Exception as reinit_error:
-                    logging.error(f"TTS reinitialization error: {reinit_error}")
-                    self.available = False
-                    break
+                # Continue without breaking - TTS is not critical
+                continue
+                
+        # Clean up thread engine
+        if thread_engine:
+            try:
+                thread_engine.stop()
+            except:
+                pass
                 
         logging.info("TTS worker thread stopped")
     
@@ -266,6 +289,9 @@ class TTSManager:
         logging.info("TTS manager stopped")
 
 
+########################################
+# EMOTION FEEDBACK MANAGER
+########################################
 class EmotionFeedbackManager:
     """Manages emotion-based feedback with intelligent timing"""
     
@@ -274,7 +300,7 @@ class EmotionFeedbackManager:
         self.last_compliment_time = 0
         self.last_no_face_message_time = 0
         self.consecutive_emotions = {}
-        self.emotion_stability_threshold = 2  # Reduced from 3 to 2 seconds for easier testing
+        self.emotion_stability_threshold = 1  # Reduced from 2 to 1 second for easier testing
         self.last_emotion_change_time = time.time()
         
     def should_give_compliment(self, emotion: str, confidence: float) -> bool:
@@ -282,22 +308,29 @@ class EmotionFeedbackManager:
         current_time = time.time()
         
         # Check cooldown
-        if current_time - self.last_compliment_time < COMPLIMENT_COOLDOWN:
+        time_since_last = current_time - self.last_compliment_time
+        if time_since_last < COMPLIMENT_COOLDOWN:
+            logging.debug(f"Compliment blocked by cooldown: {time_since_last:.1f}s < {COMPLIMENT_COOLDOWN}s")
             return False
         
         # Check confidence threshold
-        if confidence < 0.7:
+        if confidence < 0.6:
+            logging.debug(f"Compliment blocked by low confidence: {confidence:.2f} < 0.6")
             return False
         
         # Track emotion stability
         if emotion not in self.consecutive_emotions:
             self.consecutive_emotions[emotion] = current_time
+            logging.debug(f"Starting emotion tracking for {emotion}")
             return False
         
         # Check if emotion has been stable long enough
         emotion_duration = current_time - self.consecutive_emotions[emotion]
         if emotion_duration >= self.emotion_stability_threshold:
+            logging.info(f"✅ Compliment approved! Emotion {emotion} stable for {emotion_duration:.1f}s (confidence: {confidence:.2f})")
             return True
+        else:
+            logging.debug(f"Emotion {emotion} not stable enough: {emotion_duration:.1f}s < {self.emotion_stability_threshold}s")
         
         return False
     
@@ -310,11 +343,7 @@ class EmotionFeedbackManager:
             compliments = COMPLIMENTS.get(emotion, COMPLIMENTS['neutral'])
             compliment = random.choice(compliments)
             
-            # Add confidence-based enthusiasm
-            if confidence > 0.9:
-                compliment = f"✨ {compliment} ✨"
-            elif confidence > 0.8:
-                compliment = f"🌟 {compliment}"
+            # No emoji decorations - keep compliments clean for TTS
             
             # Update timing
             self.last_compliment_time = time.time()

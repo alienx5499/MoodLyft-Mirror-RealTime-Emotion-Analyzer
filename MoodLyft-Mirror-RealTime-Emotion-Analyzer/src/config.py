@@ -26,7 +26,7 @@ DEFAULT_CAMERA_HEIGHT = 480
 DEFAULT_FPS = 30
 
 # Cooldown timings (in seconds)
-COMPLIMENT_COOLDOWN = 3
+COMPLIMENT_COOLDOWN = 1
 NO_FACE_COOLDOWN = 5
 
 ########################################
@@ -34,53 +34,53 @@ NO_FACE_COOLDOWN = 5
 ########################################
 COMPLIMENTS = {
     "happy": [
-        "Your radiant smile lights up the entire room! ✨",
-        "That genuine happiness is absolutely contagious! 🌟",
-        "You have such a warm, inviting presence! 💫",
-        "Your joy creates beautiful ripples of positivity! 🌈",
-        "Keep shining with that magnificent energy! ⭐"
+        "Your radiant smile lights up the entire room!",
+        "That genuine happiness is absolutely contagious!",
+        "You have such a warm, inviting presence!",
+        "Your joy creates beautiful ripples of positivity!",
+        "Keep shining with that magnificent energy!"
     ],
     "neutral": [
-        "Your calm presence brings such peaceful energy! 🧘",
-        "There's incredible strength in your composure! 💪",
-        "Your steady energy is truly admirable! 🌿",
-        "You bring perfect balance wherever you go! ⚖️",
-        "Your mindful presence is deeply appreciated! 🕯️"
+        "Your calm presence brings such peaceful energy!",
+        "There's incredible strength in your composure!",
+        "Your steady energy is truly admirable!",
+        "You bring perfect balance wherever you go!",
+        "Your mindful presence is deeply appreciated!"
     ],
     "sad": [
-        "You're so much stronger than you realize! 💪",
-        "Every storm passes - brighter days ahead! 🌅",
-        "Your resilience is truly inspiring to witness! 🦋",
-        "Better days are coming - believe in yourself! 🌱",
-        "You're never alone in this beautiful journey! 🤝"
+        "You're so much stronger than you realize!",
+        "Every storm passes - brighter days ahead!",
+        "Your resilience is truly inspiring to witness!",
+        "Better days are coming - believe in yourself!",
+        "You're never alone in this beautiful journey!"
     ],
     "angry": [
-        "Channel that powerful energy into positive change! ⚡",
-        "Your passion can truly move mountains! 🏔️",
-        "Transform that fire into unstoppable motivation! 🔥",
-        "Your intensity can spark absolutely amazing things! 💥",
-        "Use that incredible power to achieve greatness! 🚀"
+        "Channel that powerful energy into positive change!",
+        "Your passion can truly move mountains!",
+        "Transform that fire into unstoppable motivation!",
+        "Your intensity can spark absolutely amazing things!",
+        "Use that incredible power to achieve greatness!"
     ],
     "surprise": [
-        "Your sense of wonder is so refreshing! 🌺",
-        "Stay curious and keep exploring life! 🔍",
-        "Life is overflowing with amazing discoveries! 🗺️",
-        "Your enthusiasm is beautifully infectious! 🎉",
-        "Keep embracing new and exciting experiences! 🎭"
+        "Your sense of wonder is so refreshing!",
+        "Stay curious and keep exploring life!",
+        "Life is overflowing with amazing discoveries!",
+        "Your enthusiasm is beautifully infectious!",
+        "Keep embracing new and exciting experiences!"
     ],
     "fear": [
-        "Courage isn't fearlessness - it's facing fear head-on! 🦸",
-        "You're so much braver than you believe! 🛡️",
-        "Every step forward conquers fear completely! 👣",
-        "Your strength shines through any uncertainty! ✨",
-        "Fear is temporary - your courage is permanent! 💎"
+        "Courage isn't fearlessness - it's facing fear head-on!",
+        "You're so much braver than you believe!",
+        "Every step forward conquers fear completely!",
+        "Your strength shines through any uncertainty!",
+        "Fear is temporary - your courage is permanent!"
     ],
     "disgust": [
-        "Your standards show incredible self-respect! 👑",
-        "Trust your instincts - they serve you perfectly! 🧭",
-        "Your boundaries protect your inner peace! 🛡️",
-        "Standing firm shows true inner strength! 🌳",
-        "Your authenticity is genuinely powerful! 💯"
+        "Your standards show incredible self-respect!",
+        "Trust your instincts - they serve you perfectly!",
+        "Your boundaries protect your inner peace!",
+        "Standing firm shows true inner strength!",
+        "Your authenticity is genuinely powerful!"
     ]
 }
 
@@ -132,7 +132,7 @@ FONT_PATHS = {
 ########################################
 # TTS SETTINGS
 ########################################
-TTS_RATE = 160  # Speech rate
+TTS_RATE = 140  # Speech rate (slower for better clarity)
 TTS_VOLUME = 0.9  # Speech volume
 TTS_PREFERRED_VOICES = ['en_US', 'female', 'english']
 

@@ -509,6 +509,12 @@ def display_usage_instructions():
 
 def main():
     """Main setup function"""
+    # Step 0: Change to script directory to ensure relative paths work correctly
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    original_dir = os.getcwd()
+    os.chdir(script_dir)
+    print(f"🔧 Working in script directory: {script_dir}")
+    
     print_banner()
     
     # Step 1: Check Python version
@@ -559,13 +565,16 @@ def main():
     return 0
 
 if __name__ == "__main__":
+    original_dir = os.getcwd()
     try:
         exit_code = main()
         sys.exit(exit_code)
     except KeyboardInterrupt:
         print("\n\n👋 Setup cancelled by user")
+        os.chdir(original_dir)  # Restore original directory
         sys.exit(1)
     except Exception as e:
         print(f"\n❌ Setup error: {e}")
         print("Please check the error above and try again.")
+        os.chdir(original_dir)  # Restore original directory
         sys.exit(1) 
