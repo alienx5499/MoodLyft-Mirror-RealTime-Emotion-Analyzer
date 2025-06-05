@@ -274,7 +274,7 @@ class EmotionFeedbackManager:
         self.last_compliment_time = 0
         self.last_no_face_message_time = 0
         self.consecutive_emotions = {}
-        self.emotion_stability_threshold = 3  # seconds
+        self.emotion_stability_threshold = 2  # Reduced from 3 to 2 seconds for easier testing
         self.last_emotion_change_time = time.time()
         
     def should_give_compliment(self, emotion: str, confidence: float) -> bool:

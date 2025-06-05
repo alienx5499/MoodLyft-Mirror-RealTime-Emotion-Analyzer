@@ -26,7 +26,7 @@ DEFAULT_CAMERA_HEIGHT = 480
 DEFAULT_FPS = 30
 
 # Cooldown timings (in seconds)
-COMPLIMENT_COOLDOWN = 8
+COMPLIMENT_COOLDOWN = 3
 NO_FACE_COOLDOWN = 5
 
 ########################################

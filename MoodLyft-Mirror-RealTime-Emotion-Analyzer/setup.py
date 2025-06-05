@@ -287,8 +287,15 @@ def install_requirements_in_venv():
     """Install requirements.txt in the virtual environment"""
     venv_info = get_venv_info()
     
-    # Find the appropriate requirements file
-    requirements_files = ["requirements.txt", "requirements-macos.txt", "requirements-windows.txt"]
+    # Find the appropriate requirements file - prioritize platform-specific ones
+    system = platform.system().lower()
+    if system == "darwin":
+        requirements_files = ["requirements-macos.txt", "requirements.txt"]
+    elif system == "windows":
+        requirements_files = ["requirements-windows.txt", "requirements.txt"]
+    else:
+        requirements_files = ["requirements.txt", "requirements-macos.txt", "requirements-windows.txt"]
+    
     requirements_file = None
     
     for req_file in requirements_files:
